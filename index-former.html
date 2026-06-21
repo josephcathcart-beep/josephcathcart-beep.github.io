@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Further Maths etc. — squared paper</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- ============================================================
+     BASE — shared structure for all three flavours (tokens only)
+     ============================================================ -->
+<style id="base">
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  background-image:linear-gradient(var(--bg-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bg-grid) 1px,transparent 1px);
+  background-size:var(--grid-size) var(--grid-size)}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1100px;margin:0 auto;padding:0 22px}
+h1,h2{font-family:var(--display);font-weight:var(--display-wght);letter-spacing:-.015em;line-height:1.05;margin:0}
+
+.hero{position:relative;padding:90px 0 30px;text-align:center;overflow:hidden}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-faint)}
+.title{font-size:clamp(2.6rem,8.5vw,5.2rem);margin:.16em 0 .14em;display:inline-block;cursor:default;position:relative}
+.title .etc{font-family:var(--display);font-style:italic;color:var(--accent-etc,var(--ink-soft));cursor:pointer}
+.title .etc:hover{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:1px}
+.wig{display:inline-block;transform-origin:50% 88%}
+.title:hover .wig{animation:wig .62s ease}
+@keyframes wig{0%,100%{transform:rotate(0)}18%{transform:rotate(-17deg)}38%{transform:rotate(12deg)}58%{transform:rotate(-7deg)}78%{transform:rotate(4deg)}}
+.lede{max-width:48ch;margin:.5em auto 0;color:var(--ink-soft);font-size:1.02rem}
+
+.slab{display:flex;align-items:baseline;gap:.7rem;margin:56px 0 16px}
+.slab h2{font-size:1.55rem}
+.slab .num{font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;color:var(--ink-faint)}
+.intro{color:var(--ink-soft);margin:0 0 18px;max-width:60ch}
+
+#papers{display:grid;gap:14px}
+.paper{border:1px solid var(--phead-bd,var(--line));border-radius:var(--radius);background:var(--card-bg,var(--bg2));overflow:hidden}
+.phead{width:100%;display:grid;grid-template-columns:108px 1fr auto;align-items:center;gap:18px;padding:18px 20px;
+  background:var(--phead-bg,transparent);color:var(--phead-fg,var(--ink));border:0;cursor:pointer;text-align:left;font:inherit}
+.curve{width:100px;height:64px;color:var(--curve-col,var(--accent));display:block}
+.pnum{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;opacity:.8;display:block}
+.pname{font-family:var(--display);font-weight:var(--display-wght);font-size:1.3rem;display:block;margin:.08em 0 .14em}
+.pcount{font-size:.85rem;opacity:.72;display:block}
+.chev{font-family:var(--mono);font-size:1.35rem;opacity:.55;transition:transform .25s}
+.paper.open .chev{transform:rotate(45deg)}
+.psections{background:var(--surface,var(--bg2));border-top:1px solid var(--line)}
+.sec{display:grid;grid-template-columns:62px 1fr;gap:14px;padding:15px 20px;border-top:1px solid var(--line)}
+.sec:first-child{border-top:0}
+.seccode{font-family:var(--mono);font-size:.82rem;color:var(--ink-faint);padding-top:.18em}
+.sectopic{font-family:var(--display);font-size:1.06rem;margin-bottom:.35em;color:var(--ink)}
+.links{list-style:none;margin:0;padding:0;display:grid;gap:.32em}
+.links a{display:inline-flex;align-items:center;gap:.6em;color:var(--ink-soft);font-size:.94rem;padding:.1em 0;width:fit-content}
+.links a:hover{color:var(--ink)}
+.kind{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:.2em .55em;border-radius:999px;border:1px solid var(--line);color:var(--ink-faint);flex:none}
+.empty{color:var(--ink-faint);font-size:.9rem;font-style:italic}
+
+#etcChips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.chip{font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;padding:.44em .95em;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink-soft);cursor:pointer;transition:background .15s,color .15s}
+.chip.on{background:var(--chip-on-bg,var(--ink));color:var(--chip-on-fg,var(--bg));border-color:transparent}
+#etcCards{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:14px}
+.etccard{display:block;padding:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg2);transition:border-color .15s,transform .15s}
+.etccard:hover{border-color:var(--ink-faint);transform:translateY(-2px)}
+.etctopic{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.etctitle{font-family:var(--display);font-size:1.1rem;margin:.4em 0 .8em;line-height:1.22;color:var(--ink)}
+.etctags{display:flex;flex-wrap:wrap;gap:6px}
+.etctag{font-family:var(--mono);font-size:.62rem;padding:.22em .55em;border-radius:5px;color:#fff;background:var(--accent)}
+
+footer{margin:72px 0 44px;text-align:center;color:var(--ink-faint);font-size:.84rem;line-height:1.5}
+footer .mono{font-family:var(--mono);letter-spacing:.04em}
+:focus-visible{outline:2px solid var(--accent-p1);outline-offset:3px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:560px){.phead{grid-template-columns:70px 1fr auto;gap:12px;padding:14px}.curve{width:64px;height:44px}.sec{grid-template-columns:46px 1fr;padding:13px 14px}}
+</style>
+
+<!-- ============================================================
+     SKIN — the only block that changes between flavours
+     ============================================================ -->
+<style id="skin">
+:root{
+  --bg:#F7F8FB; --bg2:#FFFFFF; --bg-grid:transparent; --grid-size:30px;
+  --ink:#141B2E; --ink-soft:#565E78; --ink-faint:#8B92A7; --line:#E4E7F0;
+  --p1:#2A6F6B; --p2:#3A6EA5; --p3:#BD6A2B; --p4:#A6395A;
+  --display:'Fraunces',Georgia,serif; --body:'Inter',system-ui,sans-serif; --mono:'IBM Plex Mono',monospace;
+  --display-wght:500; --radius:14px;
+  --accent-etc:#5B53A6; --chip-on-bg:#141B2E; --chip-on-fg:#fff;
+}
+.paper{border-left:3px solid var(--accent)}
+.etc-h{color:var(--accent-etc)}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(50% 60% at 50% 0%,rgba(91,83,166,.07),transparent 70%);pointer-events:none}
+</style>
+</head>
+
+<body>
+<header class="hero"><div class="wrap">
+  <h1 class="title">Further Math<span class="wig">s</span> <a class="etc" href="#etc">etc.</a></h1>
+  <p class="lede">Worked solutions, video lessons, and a few tangents worth taking — organised by paper, the way you'll sit them.</p>
+</div></header>
+
+<main class="wrap">
+  <div class="slab"><h2>Papers</h2><span class="num">four components</span></div>
+  <div id="papers"></div>
+
+  <div class="slab" id="etc"><h2 class="etc-h">etc.</h2><span class="num">paper-agnostic</span></div>
+  <p class="intro">Cross-paper curiosities — history, problem-solving, and the "why" behind the methods. Filter to a paper, or browse the lot.</p>
+  <div id="etcChips"></div>
+  <div id="etcCards"></div>
+</main>
+
+<footer class="wrap">
+  A growing library for Cambridge 9231 Further Mathematics — solutions, videos, and etc. added as they're written.
+</footer>
+
+<script>
+/* ============================================================
+   CONTENT — edit only this block to add or change materials.
+   • To add a solution/video: drop a line into a section's list.
+   • To add an "etc." item: add an entry to ETC and tag the
+     paper(s) it relates to — it stays paper-agnostic.
+   • Replace "#" with your Drive / OneDrive / YouTube links.
+   ============================================================ */
+const PAPERS = [
+  { id:'p1', n:1, name:'Further Pure Mathematics 1', curve:'rose', accent:'--p1', sections:[
+    /* ── TEMPLATE — copy this block to add a syllabus section. The slides line is
+       optional (whole-section PowerPoint PDF); delete it if there isn't one.
+       Delete the videos line if there are none, or leave videos:[] for "coming soon". ──
+    { code:'1.2', topic:'Topic name',
+      slides:[{t:'Full section slides', u:'files/Topic-name.pdf'}],
+      solutions:[{t:'Worked solution title', u:'https://link-to-your-pdf'}],
+      videos:[{t:'Video title', u:'https://youtu.be/...'}] },
+    */
+    { code:'1.1', topic:'Polynomial roots',
+  slides:[{t:'Polynomial roots \u2014 full section slides', u:'files/roots-of-polynomial-eqns-sv.pdf'}],
+  solutions:[{t:'Exercise 1A: sum and product of roots for quadratics', u:'files/Exercise-1A-Solutions.pdf'},
+    {t:'Exercise 1B: symmetric functions and power sums', u:'files/Exercise-1B-Solutions.pdf'},
+    {t:'Exercise 1C: quartics and recurrence relations', u:'files/Exercise-1C-Solutions.pdf'},
+    {t:'Exercise 1D: transforming roots by substitution', u:'files/Exercise-1D-Solutions.pdf'}] },
+
+    { code:'1.2', topic:'Rational functions',
+slides:[{t:'Rational functions \u2014 full section slides', u:'files/rational functions_sv.pdf'}],  
+solutions:[{t:'Exercise 2A: rational functions and graphs', u:'Exercise-2A-Solutions.pdf'},
+    {t:'Exercise 2B: oblique asymptotes, turning points, sketching', u:'Exercise-2B-Solutions.pdf'},
+    {t:'Exercise 2C: range of values and inequalities', u:'Exercise-2C-Solutions.pdf'},
+    {t:'Exercise 2D: related graphs', u:'Exercise-2D-Solutions.pdf'}]},
+
+    { code:'1.3', topic:'Summation of series',
+    slides:[{t:'Summation of series \u2014 full section slides', u:'files/summation-of-series-sv.pdf'}],
+  solutions:[{t:'Exercise 3A: standard sum results', u:'files/Exercise-3A-Solutions.pdf'},
+  {t:'Exercise 3B: the method of differences', u:'files/Exercise-3B-Solutions.pdf'}]},
+
+  { code:'1.7', topic:'Proof by induction',
+  solutions:[{t:'Induction for divisibility', u:'#'}], videos:[{t:'Induction, step by step', u:'#'}] },
+]},
+  { id:'p2', n:2, name:'Further Pure Mathematics 2', curve:'roots', accent:'--p2', sections:[
+    { code:'2.5', topic:'Complex numbers',
+      solutions:[{t:'De Moivre and the nth roots',u:'#'}], videos:[{t:'Roots of unity',u:'#'}] },
+    { code:'2.1', topic:'Hyperbolic functions',
+      solutions:[{t:'Inverse hyperbolics in log form',u:'#'}], videos:[] },
+    { code:'2.6', topic:'Differential equations',
+      solutions:[{t:'Second-order, constant coefficients',u:'#'}], videos:[] },
+  ]},
+  { id:'p3', n:3, name:'Further Mechanics', curve:'projectile', accent:'--p3', sections:[
+    { code:'3.1', topic:'Motion of a projectile',
+      solutions:[{t:'Range on an inclined plane',u:'#'}], videos:[{t:'Projectiles from first principles',u:'#'}] },
+    { code:'3.3', topic:'Circular motion',
+      solutions:[{t:'The conical pendulum',u:'#'}], videos:[] },
+    { code:'3.4', topic:'Hooke\u2019s law',
+      solutions:[{t:'Elastic energy and the energy method',u:'#'}], videos:[] },
+  ]},
+  { id:'p4', n:4, name:'Further Probability & Statistics', curve:'normal', accent:'--p4', sections:[
+    { code:'4.2', topic:'Inference (t-distribution)',
+      solutions:[{t:'Confidence interval for a mean',u:'#'}], videos:[] },
+    { code:'4.3', topic:'Chi-squared tests',
+      solutions:[{t:'Goodness of fit',u:'#'}], videos:[{t:'Contingency tables',u:'#'}] },
+    { code:'4.1', topic:'Continuous random variables',
+      solutions:[{t:'Finding the constant in a pdf',u:'#'}], videos:[] },
+  ]},
+];
+
+const ETC = [
+  /* ── TEMPLATE — copy this line to add an etc. item. "papers" can list any of
+     p1, p2, p3, p4 (one or several) — that's what the filter chips use. ──
+  { t:'Item title', papers:['p1'], topic:'Short topic label', u:'https://...' },
+  */
+  { t:'Cardano and the cubic formula', papers:['p1','p2'], topic:'Cubics', u:'files/etc/Cardano-cubic.pdf' },
+  { t:'The discriminant of a cubic', papers:['p1'], topic:'Cubics', u:'files/etc/Cubic-discriminant.pdf' },
+  { t:'Eigenvalues you can actually hear', papers:['p1','p2'], topic:'Matrices', u:'#' },
+  { t:'Why the normal curve turns up everywhere', papers:['p4'], topic:'Distributions', u:'#' },
+  { t:'A polar rose for every value of k', papers:['p1'], topic:'Polar coordinates', u:'#' },
+];
+
+/* ---------- nothing below needs editing ---------- */
+const ACC={p1:'--p1',p2:'--p2',p3:'--p3',p4:'--p4'};
+const pNum=id=>PAPERS.find(p=>p.id===id).n;
+
+function curveSVG(type){
+  let g='';
+  if(type==='rose'){let d='';for(let i=0;i<=240;i++){const th=i/240*Math.PI*2,r=Math.cos(3*th)*32,x=60+r*Math.cos(th),y=40+r*Math.sin(th);d+=(i?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+' '}g='<path d="'+d+'Z" fill="none" stroke="currentColor" stroke-width="1.4"/>';}
+  else if(type==='lattice'){for(let i=-3;i<=3;i++)for(let j=-2;j<=2;j++){g+='<circle cx="'+(60+i*13+j*5)+'" cy="'+(40+j*12.5)+'" r="1.7" fill="currentColor"/>';}}
+  else if(type==='roots'){const cx=60,cy=40,R=29,n=7;let poly='',dots='';for(let k=0;k<n;k++){const a=-Math.PI/2+k*2*Math.PI/n,x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);poly+=(k?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)+' ';dots+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="2.2" fill="currentColor"/>';}g='<circle cx="60" cy="40" r="29" fill="none" stroke="currentColor" stroke-width="1" opacity=".38"/><path d="'+poly+'Z" fill="none" stroke="currentColor" stroke-width="1.4"/>'+dots;}
+  else if(type==='catenary'){let d='';const a=2.3,sc=4.037;for(let i=0;i<=96;i++){const x=-a+i/96*2*a,ch=Math.cosh(x),sx=60+x*20.87,sy=12+(5.037-ch)/sc*52;d+=(i?'L':'M')+sx.toFixed(1)+' '+sy.toFixed(1)+' ';}g='<path d="'+d+'" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><circle cx="108" cy="12" r="2.2" fill="currentColor"/>';}
+  else if(type==='projectile'){let d='M12 70 ';for(let x=12;x<=108;x+=2){const t=(x-12)/96;d+='L'+x+' '+(70-4*48*t*(1-t)).toFixed(1)+' '}g='<line x1="12" y1="70" x2="110" y2="70" stroke="currentColor" stroke-width=".8" opacity=".35"/><path d="'+d+'" fill="none" stroke="currentColor" stroke-width="1.4"/>';}
+  else{let d='M10 70 ';for(let x=10;x<=110;x+=2){d+='L'+x+' '+(70-50*Math.exp(-((x-60)**2)/512)).toFixed(1)+' '}g='<line x1="10" y1="70" x2="110" y2="70" stroke="currentColor" stroke-width=".8" opacity=".35"/><path d="'+d+'" fill="none" stroke="currentColor" stroke-width="1.4"/>';}
+  return '<svg viewBox="0 0 120 80" class="curve" aria-hidden="true">'+g+'</svg>';
+}
+
+const grid=document.getElementById('papers');
+PAPERS.forEach(p=>{
+  const ns=p.sections.reduce((a,s)=>a+(s.solutions||[]).length,0);
+  const card=document.createElement('section');
+  card.className='paper';card.style.setProperty('--accent','var('+p.accent+')');
+  card.innerHTML=`<button class="phead" aria-expanded="false">${curveSVG(p.curve)}
+    <span><span class="pnum">Paper ${p.n}</span><span class="pname">${p.name}</span>
+    <span class="pcount">${ns} solution${ns!==1?'s':''}</span></span>
+    <span class="chev" aria-hidden="true">+</span></button><div class="psections" hidden></div>`;
+  const body=card.querySelector('.psections');
+  p.sections.forEach(s=>{
+    const ls=[...(s.slides||[]).map(x=>({...x,k:'Slides'})),...(s.solutions||[]).map(x=>({...x,k:'Solution'}))];
+    const sec=document.createElement('div');sec.className='sec';
+    sec.innerHTML=`<div class="seccode">${s.code}</div><div><div class="sectopic">${s.topic}</div>`+
+      (ls.length?`<ul class="links">`+ls.map(l=>`<li><a href="${l.u}"><span class="kind">${l.k}</span>${l.t}</a></li>`).join('')+`</ul>`
+       :`<div class="empty">Coming as the section is written.</div>`)+`</div>`;
+    body.appendChild(sec);
+  });
+  const btn=card.querySelector('.phead');
+  btn.addEventListener('click',()=>{const o=btn.getAttribute('aria-expanded')==='true';btn.setAttribute('aria-expanded',String(!o));body.hidden=o;card.classList.toggle('open',!o);});
+  grid.appendChild(card);
+});
+
+const cards=document.getElementById('etcCards'),chips=document.getElementById('etcChips');
+function renderEtc(f){cards.innerHTML='';ETC.filter(e=>f==='all'||e.papers.includes(f)).forEach(e=>{
+  const tags=e.papers.map(id=>`<span class="etctag" style="--accent:var(${ACC[id]})">P${pNum(id)}</span>`).join('');
+  const a=document.createElement('a');a.className='etccard';a.href=e.u;
+  a.innerHTML=`<div class="etctopic">${e.topic}</div><div class="etctitle">${e.t}</div><div class="etctags">${tags}</div>`;
+  cards.appendChild(a);});}
+[['all','All'],['p1','P1'],['p2','P2'],['p3','P3'],['p4','P4']].forEach(([f,lab],i)=>{
+  const b=document.createElement('button');b.className='chip'+(i===0?' on':'');b.textContent=lab;
+  b.addEventListener('click',()=>{chips.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));b.classList.add('on');renderEtc(f);});
+  chips.appendChild(b);});
+renderEtc('all');
+</script>
+</body>
+</html>
