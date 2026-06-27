@@ -506,14 +506,14 @@ function openPaper(id,ti){
       <div class="topic-body">${rows}</div></div>`;
   }).join("");
 
-  const pp=p.pastpapers.map(s=>`<div class="pp-row">
+  const pp=(p.pastpapers||[]).map(s=>`<div class="pp-row">
       <span class="pp-session">${s.session}${s.isNew?' <span class="new" style="font-size:9px">NEW</span>':''}</span>
       <span class="pp-links">
         <a class="lnk" href="${s.paperUrl||'#'}"${s.paperUrl?' target="_blank" rel="noopener"':''}>Question paper →</a>
         ${s.sol?`<a class="lnk sol" href="${s.solUrl||'#'}"${s.solUrl?' target="_blank" rel="noopener"':''}>Solution · handwritten →</a>`:'<span class="lnk" style="opacity:.45">Solution coming</span>'}
       </span></div>`).join("");
 
-  const ppBlock=p.pastpapers.length?`<div class="block-label">Past papers &amp; handwritten solutions</div>${pp}`:"";
+  const ppBlock=(p.pastpapers||[]).length?`<div class="block-label">Past papers &amp; handwritten solutions</div>${pp}`:"";
 
   $("#d-body").innerHTML=`<div style="--accent:${av(p.id)}">
     <div class="topic-chips">${chips}</div>
