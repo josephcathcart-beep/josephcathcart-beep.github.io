@@ -154,6 +154,24 @@ header.nav{position:sticky;top:0;z-index:50;background:rgba(246,247,250,.82);bac
 .lnk:hover{border-color:var(--accent);color:var(--accent)}
 .lnk.sol{border-style:dashed}
 
+/* ============================================================ VIEWER (image-only resources) */
+.res.img .arr{transform:none}
+.res .eye{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--ink-faint);margin-left:auto;padding-left:10px}
+#viewer{position:fixed;inset:0;z-index:90;display:none;background:rgba(23,32,55,.82);
+  backdrop-filter:blur(3px);overflow:auto;padding:48px 16px 64px}
+#viewer.on{display:block}
+.vw-inner{max-width:860px;margin:0 auto}
+.vw-bar{position:sticky;top:-48px;display:flex;align-items:center;gap:12px;margin:-24px 0 18px;
+  padding:10px 14px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r)}
+.vw-title{font-weight:600;font-size:14px;color:var(--ink)}
+.vw-meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+.vw-close{margin-left:auto;border:1px solid var(--line);background:#fff;border-radius:8px;
+  padding:6px 12px;font-size:13px;cursor:pointer;color:var(--ink)}
+.vw-close:hover{border-color:var(--accent,#888)}
+.vw-page{display:block;width:100%;height:auto;margin:0 auto 14px;border:1px solid var(--line);
+  border-radius:6px;background:#fff;box-shadow:0 6px 20px rgba(23,32,55,.18);user-select:none;-webkit-user-drag:none}
+.vw-foot{text-align:center;color:#cdd3e4;font-family:var(--mono);font-size:11px;padding:8px 0 4px}
+
 /* ============================================================ FOOTER */
 footer{border-top:1px solid var(--line);padding:40px 0 56px;margin-top:20px}
 footer .fnote{color:var(--ink-soft);max-width:560px}
@@ -232,6 +250,19 @@ footer .fmeta{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:
   </div>
 </section>
 
+<!-- image viewer: shows watermarked page images, no PDF served -->
+<div id="viewer" role="dialog" aria-modal="true" aria-label="Document viewer">
+  <div class="vw-inner">
+    <div class="vw-bar">
+      <span class="vw-title" id="vw-title"></span>
+      <span class="vw-meta" id="vw-meta"></span>
+      <button class="vw-close" id="vw-close">Close ✕</button>
+    </div>
+    <div id="vw-pages"></div>
+    <div class="vw-foot">End of document</div>
+  </div>
+</div>
+
 <footer>
   <div class="wrap">
     <p class="fnote" id="footer-note"></p>
@@ -261,8 +292,8 @@ footer .fmeta{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:
    ============================================================================ */
 
 const COURSE = {
-  teacher: "Joe Cathcart",                         // ← your name
-  lead: "Everything for all four papers, organised by syllabus topic — chapter slides, worked textbook solutions, handwritten solutions to past papers, and some enrichment material.",
+  teacher: "Mr —",                         // ← your name
+  lead: "Everything for all four papers, organised by syllabus topic — worked textbook solutions, recorded lessons, etc., past papers, and handwritten mark schemes. Kept up to date by your teacher.",
   footer: "A growing resource library for Cambridge 9231 Further Mathematics — new solutions and etc. added regularly.",
 };
 
@@ -282,14 +313,16 @@ const PAPERS = [
     ],
     textbook:[
       {title:"Exercise 1A: sum and product of roots for quadratics", topic:"Roots of polynomial equations", url:"files/Exercise-1A-Solutions.pdf"},
+      // IMAGE-ONLY version (protected): run the converter, then use imgDir+pages INSTEAD of url —
+      // {title:"Exercise 1A: sum and product of roots for quadratics", topic:"Roots of polynomial equations", imgDir:"img/Exercise-1A-Solutions/", pages:3},
       {title:"Exercise 1B: symmetric functions and power sums", topic:"Roots of polynomial equations", url:"files/Exercise-1B-Solutions.pdf"},
       {title:"Exercise 1C: quartics and recurrence relations", topic:"Roots of polynomial equations", url:"files/Exercise-1C-Solutions.pdf"},
       {title:"Exercise 1D: transforming roots by substitution", topic:"Roots of polynomial equations", url:"files/Exercise-1D-Solutions.pdf"},
       {title:"End of Chapter 1 exercises", topic:"Roots of polynomial equations", url:"files/End-of-Chapter-1-Solutions.pdf"},
-      {title:"Exercise 2A: rational functions and graphs", topic:"Rational functions and graphs", url:"files/Exercise-2A-Solutions.pdf"},
-      {title:"Exercise 2B: oblique asymptotes, turning points, sketching", topic:"Rational functions and graphs", url:"files/Exercise-2B-Solutions.pdf"},
-      {title:"Exercise 2C: range of values and inequalities", topic:"Rational functions and graphs", url:"files/Exercise-2C-Solutions.pdf"},
-      {title:"Exercise 2D: related graphs", topic:"Rational functions and graphs", url:"files/Exercise-2D-Solutions.pdf"},
+      {title:"Exercise 2A: rational functions and graphs", topic:"Rational functions and graphs", url:"Exercise-2A-Solutions.pdf"},
+      {title:"Exercise 2B: oblique asymptotes, turning points, sketching", topic:"Rational functions and graphs", url:"Exercise-2B-Solutions.pdf"},
+      {title:"Exercise 2C: range of values and inequalities", topic:"Rational functions and graphs", url:"Exercise-2C-Solutions.pdf"},
+      {title:"Exercise 2D: related graphs", topic:"Rational functions and graphs", url:"Exercise-2D-Solutions.pdf"},
       {title:"Exercise 3A: standard sum results", topic:"Summation of series", url:"files/Exercise-3A-Solutions.pdf"},
       {title:"Exercise 3B: the method of differences", topic:"Summation of series", url:"files/Exercise-3B-Solutions.pdf"},
       {title:"Induction for divisibility", topic:"Proof by induction", url:"#"},
@@ -458,6 +491,14 @@ $("#enr-grid").innerHTML=ALL_ENR.map(e=>{
 
 /* paper detail */
 function resRow(kind,it,enr){
+  // image-only item: imgDir + pages, opens the on-page viewer (no PDF served)
+  if(it.imgDir&&it.pages){
+    return `<a class="res img" href="#" data-imgdir="${it.imgDir}" data-pages="${it.pages}" data-title="${it.title.replace(/"/g,'&quot;')}">
+      <span class="kind${enr?' enr':''}">${kind}</span>
+      <span class="rt">${it.title}</span>
+      ${it.isNew?'<span class="new">NEW</span>':''}
+      <span class="eye">view ▦</span></a>`;
+  }
   const ready=it.url&&it.url!=="#";
   const href=ready?it.url:"#";
   const ext=ready?' target="_blank" rel="noopener"':'';
@@ -506,14 +547,14 @@ function openPaper(id,ti){
       <div class="topic-body">${rows}</div></div>`;
   }).join("");
 
-  const pp=(p.pastpapers||[]).map(s=>`<div class="pp-row">
+  const pp=p.pastpapers.map(s=>`<div class="pp-row">
       <span class="pp-session">${s.session}${s.isNew?' <span class="new" style="font-size:9px">NEW</span>':''}</span>
       <span class="pp-links">
         <a class="lnk" href="${s.paperUrl||'#'}"${s.paperUrl?' target="_blank" rel="noopener"':''}>Question paper →</a>
         ${s.sol?`<a class="lnk sol" href="${s.solUrl||'#'}"${s.solUrl?' target="_blank" rel="noopener"':''}>Solution · handwritten →</a>`:'<span class="lnk" style="opacity:.45">Solution coming</span>'}
       </span></div>`).join("");
 
-  const ppBlock=(p.pastpapers||[]).length?`<div class="block-label">Past papers &amp; handwritten solutions</div>${pp}`:"";
+  const ppBlock=p.pastpapers.length?`<div class="block-label">Past papers &amp; handwritten solutions</div>${pp}`:"";
 
   $("#d-body").innerHTML=`<div style="--accent:${av(p.id)}">
     <div class="topic-chips">${chips}</div>
@@ -542,8 +583,38 @@ function openPaper(id,ti){
     if(chip.dataset.empty==="1")return;
     chip.addEventListener("click",()=>openTopic(parseInt(chip.dataset.topic,10)));
   });
+  $("#d-body").querySelectorAll(".res.img").forEach(row=>{
+    row.addEventListener("click",e=>{
+      e.preventDefault();
+      openViewer(row.dataset.imgdir,parseInt(row.dataset.pages,10),row.dataset.title,av(p.id));
+    });
+  });
   if(typeof ti==="number"&&!isNaN(ti)) openTopic(ti);
 }
+
+/* image viewer — builds page images on demand, serves no PDF */
+function openViewer(dir,pages,title,accent){
+  const v=$("#viewer");
+  v.style.setProperty("--accent",accent||"#888");
+  $("#vw-title").textContent=title||"Document";
+  $("#vw-meta").textContent=pages+(pages>1?" pages":" page");
+  let imgs="";
+  for(let i=1;i<=pages;i++){
+    imgs+=`<img class="vw-page" src="${dir}p${i}.png" alt="${(title||'page')} — page ${i}" loading="lazy" oncontextmenu="return false">`;
+  }
+  $("#vw-pages").innerHTML=imgs;
+  v.classList.add("on");
+  v.scrollTop=0;
+  document.body.style.overflow="hidden";
+}
+function closeViewer(){
+  $("#viewer").classList.remove("on");
+  $("#vw-pages").innerHTML="";
+  document.body.style.overflow="";
+}
+$("#vw-close").addEventListener("click",closeViewer);
+$("#viewer").addEventListener("click",e=>{if(e.target.id==="viewer")closeViewer();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeViewer();});
 function closePaper(){$("#detail").classList.remove("on");$("#home").style.display="block";}
 
 function route(){
@@ -561,7 +632,7 @@ $("#back").addEventListener("click",()=>{location.hash="";});
 window.addEventListener("hashchange",route);
 
 $("#footer-note").textContent=COURSE.footer;
-$("#footer-meta").textContent=`Further Mathematics 9231 · maintained by ${COURSE.teacher} · English (中文 to follow)`;
+$("#footer-meta").textContent=`Further Mathematics 9231 · maintained by ${COURSE.teacher} · English (中文 to follow soon)`;
 route();
 </script>
 </body>
