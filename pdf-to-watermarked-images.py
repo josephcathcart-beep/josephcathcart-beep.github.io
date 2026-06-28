@@ -47,7 +47,7 @@ def tile_watermark(img, text, opacity):
     base = img.convert("RGBA")
     W, H = base.size
     # watermark scales with page width so it looks the same at any DPI
-    font = load_font(max(18, W // 22))
+    font = load_font(max(18, W // 40))
 
     # one tile = text drawn on a transparent layer, then rotated 30 degrees
     layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
